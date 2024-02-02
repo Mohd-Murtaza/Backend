@@ -22,7 +22,7 @@ app.get("/home",(req,res)=>{
     res.status(200).send("this is a home page");
 })
 app.use("/user", userRouter);
-app.use("/notes",auth, notesRouter)
+app.use("/notes", auth, notesRouter)
 
 app.use((req,res)=>{
     res.status(404).send("this is invalid request!")
