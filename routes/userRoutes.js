@@ -42,15 +42,18 @@ userRouter.post("/login",async(req,res)=>{
         if(!checkUserIsExist){
             res.status(404).send({msg:"user not found please signup first"})
         }else{
-            bcrypt.compare(password, checkUserIsExist.password, async(err,decode)=>{
-                if(decode){
+            bcrypt.compare(password, checkUserIsExist.password, (err,decode)=>{
+                if(err){
+                    console.error("Error during password comparison:", err);
+                    res.status(500).send({ msg: "Internal server error" });
+                }else if(!decode){
+                    res.status(401).send({ msg: "Invalid password" });
+                }else{
                     const accessToken=jwt.sign({userId:checkUserIsExist._id,userName:checkUserIsExist.userName}, ACCESS_KEY,{expiresIn:"5m"});
                     const refreshToken=jwt.sign({userId:checkUserIsExist._id,userName:checkUserIsExist.userName}, REFRESH_KEY, {expiresIn:"1h"});
                     res.cookie("accessToken",accessToken);
                     res.cookie("refreshToken",refreshToken);
                     res.status(200).send({msg:"user login successfully.", accessToken, refreshToken});
-                }else{
-                    res.status(400).send({msg:"error while decoding the password", err:err.message})
                 }
             })
         }
