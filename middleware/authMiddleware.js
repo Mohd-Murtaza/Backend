@@ -14,6 +14,7 @@ const auth = async(req, res, next) => {
             res.status(200).send("please login you are logout person");
         }
         jwt.verify(accessToken, process.env.ACCESS_KEY, (err, decode) => {
+            const cookiesOptions = {  httpOnly: true ,secure:true,sameSite:'none'};
             if (err) {
                 if (err.message === "jwt expired") {
                     jwt.verify(refreshToken, process.env.REFRESH_KEY, (err,decode)=>{
@@ -22,7 +23,7 @@ const auth = async(req, res, next) => {
                             return res.status(401).json({ msg: "Invalid or expired refresh token" });
                         }
                             const accessToken = jwt.sign({userId:decode.userId,userName:decode.userName}, process.env.ACCESS_KEY, { expiresIn: "5m" });
-                            res.cookie("accessToken",accessToken);
+                            res.cookie("accessToken",accessToken, cookiesOptions);
                             console.log("create a access token again")
                             next();
                         
