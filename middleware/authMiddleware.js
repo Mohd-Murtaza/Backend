@@ -3,6 +3,7 @@ const { BlacklistModel } = require("../models/blacklistModel");
 require("dotenv").config();
 
 const auth = async(req, res, next) => {
+    console.log(req.cookies)
     const accessToken = req.cookies.accessToken;
     const refreshToken= req.cookies.refreshToken;
     try {

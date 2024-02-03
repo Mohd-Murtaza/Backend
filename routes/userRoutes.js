@@ -37,6 +37,7 @@ userRouter.post("/signup", async(req,res)=>{
 userRouter.post("/login",async(req,res)=>{
     try {
         const {email,password}=req.body;
+        
         const checkUserIsExist=await UserModel.findOne({email});
         console.log(checkUserIsExist)
         if(!checkUserIsExist){
@@ -62,6 +63,7 @@ userRouter.post("/login",async(req,res)=>{
     }
 });
 userRouter.post("/logout", async(req,res)=>{
+    console.log("gjgjghjfhfhf",req.cookies)
     const accessToken=req.cookies.accessToken;
     console.log({accessToken:accessToken})
     try {
