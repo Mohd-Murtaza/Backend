@@ -3,7 +3,7 @@ const { BlacklistModel } = require("../models/blacklistModel");
 require("dotenv").config();
 
 const auth = async(req, res, next) => {
-    console.log(req.cookies)
+    console.log("auth hit",req.cookies)
     const accessToken = req.cookies.accessToken;
     const refreshToken= req.cookies.refreshToken;
     try {
@@ -18,12 +18,13 @@ const auth = async(req, res, next) => {
             if (err) {
                 if (err.message === "jwt expired") {
                     jwt.verify(refreshToken, process.env.REFRESH_KEY, (err,decode)=>{
+                        const cookieOptions={httpOnly:true,secure:true,sameSite:"none"}
                         if (err) {
                             // Handle invalid or expired refresh token
                             return res.status(401).json({ msg: "Invalid or expired refresh token" });
                         }
                             const accessToken = jwt.sign({userId:decode.userId,userName:decode.userName}, process.env.ACCESS_KEY, { expiresIn: "5m" });
-                            res.cookie("accessToken",accessToken);
+                            res.cookie("accessToken",accessToken,cookieOptions);
                             console.log("create a access token again")
                             next();
                         

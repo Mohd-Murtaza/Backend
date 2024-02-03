@@ -37,7 +37,7 @@ userRouter.post("/signup", async(req,res)=>{
 userRouter.post("/login",async(req,res)=>{
     try {
         const {email,password}=req.body;
-        
+        const cookieOptions={httpOnly:true,secure:true,sameSite:"none"}
         const checkUserIsExist=await UserModel.findOne({email});
         console.log(checkUserIsExist)
         if(!checkUserIsExist){
@@ -52,8 +52,8 @@ userRouter.post("/login",async(req,res)=>{
                 }else{
                     const accessToken=jwt.sign({userId:checkUserIsExist._id,userName:checkUserIsExist.userName}, ACCESS_KEY,{expiresIn:"5m"});
                     const refreshToken=jwt.sign({userId:checkUserIsExist._id,userName:checkUserIsExist.userName}, REFRESH_KEY, {expiresIn:"1h"});
-                    res.cookie("accessToken",accessToken);
-                    res.cookie("refreshToken",refreshToken);
+                    res.cookie("accessToken",accessToken,cookieOptions);
+                    res.cookie("refreshToken",refreshToken,cookieOptions);
                     res.status(200).send({msg:"user login successfully.", accessToken, refreshToken});
                 }
             })
