@@ -5,9 +5,6 @@ require("dotenv").config();
 const auth = async(req, res, next) => {
     const accessToken = req.cookies.accessToken;
     const refreshToken= req.cookies.refreshToken;
-    const cookiesOptions={
-        sameSite:"none"
-    }
     try {
         if (!accessToken || !refreshToken) {
             return res.status(401).send({ msg: "Unauthorized - Tokens missing" });
@@ -25,7 +22,7 @@ const auth = async(req, res, next) => {
                             return res.status(401).json({ msg: "Invalid or expired refresh token" });
                         }
                             const accessToken = jwt.sign({userId:decode.userId,userName:decode.userName}, process.env.ACCESS_KEY, { expiresIn: "5m" });
-                            res.cookie("accessToken",accessToken,cookiesOptions);
+                            res.cookie("accessToken",accessToken);
                             console.log("create a access token again")
                             next();
                         
