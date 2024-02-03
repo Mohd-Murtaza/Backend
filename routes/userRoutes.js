@@ -37,7 +37,6 @@ userRouter.post("/signup", async(req,res)=>{
 userRouter.post("/login",async(req,res)=>{
     try {
         const {email,password}=req.body;
-        const cookiesOptions = {  httpOnly: true ,secure:true,sameSite:'none'};
         const checkUserIsExist=await UserModel.findOne({email});
         console.log(checkUserIsExist)
         if(!checkUserIsExist){
@@ -52,8 +51,8 @@ userRouter.post("/login",async(req,res)=>{
                 }else{
                     const accessToken=jwt.sign({userId:checkUserIsExist._id,userName:checkUserIsExist.userName}, ACCESS_KEY,{expiresIn:"5m"});
                     const refreshToken=jwt.sign({userId:checkUserIsExist._id,userName:checkUserIsExist.userName}, REFRESH_KEY, {expiresIn:"1h"});
-                    res.cookie("accessToken",accessToken, cookiesOptions);
-                    res.cookie("refreshToken",refreshToken, cookiesOptions);
+                    res.cookie("accessToken",accessToken);
+                    res.cookie("refreshToken",refreshToken);
                     res.status(200).send({msg:"user login successfully.", accessToken, refreshToken});
                 }
             })
@@ -63,8 +62,10 @@ userRouter.post("/login",async(req,res)=>{
     }
 });
 userRouter.post("/logout", async(req,res)=>{
+    const accessToken=req.cookies.accessToken;
+    const refreshToken=req.cookies.refreshToken;
+    console.log(accessToken, refreshToken)
     try {
-        const {accessToken,refreshToken}=req.cookies;
         const checkTokensIsExists=await BlacklistModel.findOne({accessToken})
         if(checkTokensIsExists){
             res.status(400).send({msg:"you already logout!"})
@@ -74,7 +75,7 @@ userRouter.post("/logout", async(req,res)=>{
             res.status(200).send({msg:"logout successfull",blacklistTokens})
         }
     } catch (error) {
-        res.status(400).send({msg:"error while logout!",error:error.message})
+        res.status(400).send({msg:"error while logout!",error:error})
     }
 });
 
