@@ -9,11 +9,7 @@ const { auth } = require("./middleware/authMiddleware");
 const PORT=process.env.PORT
 const app=express();
 app.use(express.json());
-app.use(cookieParser({
-    httpOnly:true,
-    secure:true,
-    sameSite:"none"
-}));
+app.use(cookieParser());
 app.use(cors({
     origin:["http://localhost:5173","https://fullstack-notes-app-ja6v.onrender.com","https://crud-app0101.netlify.app"],
     credentials:true
